@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-//WCZYTYWAC Z POSTACI BINARNEJ
 public class TPSIServer {
     private static List<File> files = new ArrayList<>();
     private static String path;
@@ -33,15 +32,15 @@ public class TPSIServer {
             byte[] responseBytes = new byte[0];
             Path filePath = Paths.get(path + exchange.getRequestURI().getPath());
             File fileToOpen = new File(filePath.toString());
-            if(!fileToOpen.getAbsolutePath().equals(fileToOpen.getCanonicalPath())) {
-                responseBytes = "403 Forbidden".getBytes();
+            if(!fileToOpen.getCanonicalPath().startsWith(path)) {
+                responseBytes = "403".getBytes();
                 exchange.sendResponseHeaders(403, responseBytes.length);
             }
             if (fileToOpen.exists()) {
                 if (fileToOpen.isDirectory()) {
                     files = fileList(filePath.toString());
                     for (File file : files) {
-                        response += "<a href='" + new File(path).toURI().relativize(file.toURI()).getPath() + "'>" + file.getName() + "</a><br>";
+                        response += "<a href='http://localhost:8000/" + new File(path).toURI().relativize(file.toURI()).getPath() + "'>" + file.getName() + "</a><br>";
                     }
                     exchange.getResponseHeaders().set("Content-Type", "text/html");
                     exchange.sendResponseHeaders(200, response.getBytes().length);
@@ -51,7 +50,7 @@ public class TPSIServer {
                     exchange.sendResponseHeaders(200, responseBytes.length);
                 }
             } else {
-                response = "404 Not found";
+                response = "404";
                 responseBytes = response.getBytes();
                 exchange.sendResponseHeaders(404, responseBytes.length);
             }
