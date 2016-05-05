@@ -1,10 +1,10 @@
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoDatabase;
-import com.sun.glass.ui.Application;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.linking.DeclarativeLinkingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
 import other.Model;
 
 import java.net.URI;
@@ -14,10 +14,16 @@ import java.net.URI;
  */
 public class Server {
     public static final String BASE_URI = "http://localhost:8000";
-    private static Model model = Model.getInstance();
+    //private static Model model = Model.getInstance();
 
     public static void main(String[] args) throws Exception {
+        //MongoClient mongoClient = new MongoClient();
 
+        MongoClient mongo = new MongoClient("localhost", 27017);
+        Morphia morphia = new Morphia();
+        morphia.mapPackage("model");
+        Datastore ds = morphia.createDatastore(mongo, "REST");
+        ds.ensureIndexes();
         final HttpServer server = startServer();
 
         try {
