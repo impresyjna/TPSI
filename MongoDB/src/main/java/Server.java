@@ -6,6 +6,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import other.Model;
+import resources.DateParamConverterProvider;
 
 import java.net.URI;
 
@@ -36,9 +37,10 @@ public class Server {
     }
 
     public static HttpServer startServer() {
+        DateParamConverterProvider dateParamConverterProvider = new DateParamConverterProvider("yyyy-MM-dd");
         final ResourceConfig rc = new ResourceConfig()
                 .packages("rest")
-                .register(DeclarativeLinkingFeature.class);
+                .register(DeclarativeLinkingFeature.class).register(dateParamConverterProvider);
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 }

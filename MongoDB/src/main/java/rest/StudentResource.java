@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,17 +25,34 @@ public class StudentResource {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Student> getAllStudents(@QueryParam("name") String name,
-                                        @QueryParam("surname") String surname) {
+                                        @QueryParam("surname") String surname,
+                                        @DefaultValue("equals") @QueryParam("direction") String direction,
+                                        @QueryParam("date") Date date) {
         System.out.println("Students index");
         Query<Student> q = dbSingleton.getDs().createQuery(Student.class);
         List<Student> students = q.asList();
-        if(name != null) {
+        if (name != null) {
             students = students.stream().filter(student -> student.getName().equals(name)).
                     collect(Collectors.toList());
         }
-        if(surname != null) {
+        if (surname != null) {
             students = students.stream().filter(student -> student.getSurname().equals(surname)).
                     collect(Collectors.toList());
+        }
+        if (date != null) {
+            if (direction.equals("before")) {
+                students = students.stream().filter(student -> student.getDateOfBirth().before(date))
+                        .collect(Collectors.toList());
+            }
+            if (direction.equals("equals")) {
+                students = students.stream().filter(student -> student.getDateOfBirth().equals(date))
+                        .collect(Collectors.toList());
+            }
+            if (direction.equals("after")) {
+                students = students.stream().filter(student -> student.getDateOfBirth().after(date))
+                        .collect(Collectors.toList());
+            }
+
         }
         return students;
     }
@@ -78,7 +96,7 @@ public class StudentResource {
         dbSingleton.getDs().update(query, ops);
         ops = dbSingleton.getDs().createUpdateOperations(Student.class).set("surname", student.getSurname());
         dbSingleton.getDs().update(query, ops);
-        ops = dbSingleton.getDs().createUpdateOperations(Student.class).set("birthDate", student.getBirthDate());
+        ops = dbSingleton.getDs().createUpdateOperations(Student.class).set("birthDate", student.getDateOfBirth());
         dbSingleton.getDs().update(query, ops);
 
         return Response.status(Response.Status.OK).entity(student).build();

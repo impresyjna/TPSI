@@ -18,6 +18,7 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by impresyjna on 20.04.2016.
@@ -27,10 +28,14 @@ public class CourseResource {
     DbSingleton dbSingleton = DbSingleton.getInstance();
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Course> getAllCourses() {
+    public List<Course> getAllCourses(@QueryParam("teacher") String teacher) {
         System.out.println("Courses index");
         Query<Course> q = dbSingleton.getDs().createQuery(Course.class);
         List<Course> courses = q.asList();
+        if(teacher != null) {
+            courses = courses.stream().filter(course -> course.getTeacher().equals(teacher)).
+                    collect(Collectors.toList());
+        }
         return courses;
     }
 

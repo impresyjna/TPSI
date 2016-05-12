@@ -1,5 +1,6 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.bson.types.ObjectId;
 import org.glassfish.jersey.linking.InjectLink;
 import org.glassfish.jersey.linking.InjectLinks;
@@ -15,6 +16,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,17 +46,19 @@ public class Student {
     @NotNull
     String surname;
     @NotNull
-    String birthDate;
+    @JsonFormat(shape=JsonFormat.Shape.STRING,
+            pattern="yyyy-MM-dd", timezone="CET")
+    private Date dateOfBirth;
 
     public Student() {
     }
 
-    public Student(long index, String name, String surname, String birthDate) {
+    public Student(long index, String name, String surname, Date dateOfBirth) {
 
         this.index = index;
         this.name = name;
         this.surname = surname;
-        this.birthDate = birthDate;
+        this.dateOfBirth = dateOfBirth;
         this.id = new ObjectId();
     }
 
@@ -82,11 +86,11 @@ public class Student {
         this.surname = surname;
     }
 
-    public String getBirthDate() {
-        return birthDate;
+    public Date getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setBirthDate(String birthDate) {
-        this.birthDate = birthDate;
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 }

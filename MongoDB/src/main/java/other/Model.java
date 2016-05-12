@@ -7,7 +7,10 @@ import model.GradeIterator;
 import model.Student;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
+import resources.DateParamConverterProvider;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,20 +27,25 @@ public class Model {
 
     public static Model getInstance() {
         if (instance == null) {
-            instance = new Model();
+            try {
+                instance = new Model();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         return instance;
     }
 
-    private Model() {
+    private Model() throws ParseException {
         students = new ArrayList<>();
         courses = new ArrayList<>();
-        students.add(new Student(109708, "Aaa", "Bbb", "1993-07-18"));
-        students.add(new Student(109711, "NNN", "DDD", "1993-08-10"));
-        students.add(new Student(109724, "EEE", "BFFFbb", "1993-11-22"));
-        Student student4 = new Student(109742, "AAAAA", "WERR", "1993-01-21");
-        Student student1 = new Student(109712, "AAAAA", "WERR", "1993-01-11");
-        Student student2 = new Student(109709, "AAAaaaaAA", "WERRaaaa", "1993-01-31");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        students.add(new Student(109708, "Aaa", "Bbb", formatter.parse("1993-07-18")));
+        students.add(new Student(109711, "NNN", "DDD", formatter.parse("1993-08-10")));
+        students.add(new Student(109724, "EEE", "BFFFbb", formatter.parse("1993-11-22")));
+        Student student4 = new Student(109742, "AAAAA", "WERR", formatter.parse("1993-01-21"));
+        Student student1 = new Student(109712, "AAAAA", "WERR", formatter.parse("1993-01-11"));
+        Student student2 = new Student(109709, "AAAaaaaAA", "WERRaaaa", formatter.parse("1993-01-31"));
         students.add(student4);
         students.add(student1);
         students.add(student2);
@@ -63,9 +71,9 @@ public class Model {
         Grade grade6 = new Grade(2.0, student4, 5);
         course1.getGrades().add(grade6);
 
-        dbSingleton.getDs().save(new GradeIterator(6));
-        dbSingleton.getDs().save(courses);
-        dbSingleton.getDs().save(students);
+//        dbSingleton.getDs().save(new GradeIterator(6));
+//        dbSingleton.getDs().save(courses);
+//        dbSingleton.getDs().save(students);
 
 
     }

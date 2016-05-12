@@ -30,7 +30,8 @@ public class GradeResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Grade> getAllGrades(@PathParam("index") final long index, @PathParam("courseId") final ObjectId courseId) {
+    public List<Grade> getAllGrades(@PathParam("index") final long index, @PathParam("courseId") final ObjectId courseId,
+                                    @DefaultValue("more") @QueryParam("direction") String direction, @QueryParam("grade_value") Double gradeValue) {
         Course returnedCourse = null;
         returnedCourse = dbSingleton.getDs().get(Course.class, courseId);
         List<Grade> grades = new ArrayList<>();
@@ -39,6 +40,17 @@ public class GradeResource {
                 grades.add(grade);
             }
         }
+        if (gradeValue != null) {
+//            if (Grade.validateNoteWithValue(gradeValue)) {
+                if (direction.equals("more")) {
+                    grades = grades.stream().filter(grade -> grade.getGradeValue() <= gradeValue).collect(Collectors.toList());
+                }
+                if (direction.equals("less")) {
+                    grades = grades.stream().filter(grade -> grade.getGradeValue() > gradeValue).collect(Collectors.toList());
+                }
+            }
+//        }
+
         return grades;
     }
 
