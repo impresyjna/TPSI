@@ -3,6 +3,7 @@ package other;
 import com.mongodb.MongoClient;
 import model.Course;
 import model.Grade;
+import model.GradeIterator;
 import model.Student;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
@@ -19,6 +20,7 @@ public class Model {
     private List<Course> courses;
     private int courseId = 0;
     private int gradeId = 0;
+    private DbSingleton dbSingleton = DbSingleton.getInstance();
 
     public static Model getInstance() {
         if (instance == null) {
@@ -48,24 +50,22 @@ public class Model {
         Course course3 = new Course("PIT", "Doktor AAA GGG");
         courses.add(course3);
 
-        Grade grade1 = new Grade(5.0, student1, getGradeIndex());
+        Grade grade1 = new Grade(5.0, student1, 0);
         course1.getGrades().add(grade1);
-        Grade grade2 = new Grade(4.5, student2, getGradeIndex());
+        Grade grade2 = new Grade(4.5, student2, 1);
         course2.getGrades().add(grade2);
-        Grade grade3 = new Grade(4.0, student4, getGradeIndex());
+        Grade grade3 = new Grade(4.0, student4, 2);
         course3.getGrades().add(grade3);
-        Grade grade4 = new Grade(3.0, student1, getGradeIndex());
+        Grade grade4 = new Grade(3.0, student1, 3);
         course1.getGrades().add(grade4);
-        Grade grade5 = new Grade(3.5, student2, getGradeIndex());
+        Grade grade5 = new Grade(3.5, student2, 4);
         course1.getGrades().add(grade5);
-        Grade grade6 = new Grade(2.0, student4, getGradeIndex());
+        Grade grade6 = new Grade(2.0, student4, 5);
         course1.getGrades().add(grade6);
 
-        MongoClient mongo = new MongoClient("localhost", 27017);
-        Morphia morphia = new Morphia();
-        Datastore ds = morphia.createDatastore(mongo, "REST");
-//        ds.save(courses);
-//        ds.save(students);
+        dbSingleton.getDs().save(new GradeIterator(6));
+        dbSingleton.getDs().save(courses);
+        dbSingleton.getDs().save(students);
 
 
     }

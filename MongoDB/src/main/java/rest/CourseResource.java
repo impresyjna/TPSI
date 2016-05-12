@@ -1,7 +1,12 @@
 package rest;
 
+import com.mongodb.WriteResult;
 import model.Course;
 import model.Student;
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.UpdateOperations;
+import other.DbSingleton;
 import other.Model;
 
 import javax.validation.Valid;
@@ -19,29 +24,25 @@ import java.util.List;
  */
 @Path("/courses")
 public class CourseResource {
+    DbSingleton dbSingleton = DbSingleton.getInstance();
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Course> getAllCourses() {
         System.out.println("Courses index");
-        List<Course> courses = Model.getInstance().getCourses();
+        Query<Course> q = dbSingleton.getDs().createQuery(Course.class);
+        List<Course> courses = q.asList();
         return courses;
     }
 
     @GET
     @Path("/{courseId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getOneCourse(@PathParam("courseId") final int courseId) {
+    public Response getOneCourse(@PathParam("courseId") final ObjectId courseId) {
         Course returnedCourse = null;
-//        for (Course course : Model.getInstance().getCourses()) {
-//            if (course.getId() == courseId) {
-//                returnedCourse = course;
-//                break;
-//            }
-//        }
-//
-//        if (returnedCourse == null) {
-//            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("404 Not found").build());
-//        }
+        returnedCourse = dbSingleton.getDs().get(Course.class, courseId);
+        if (returnedCourse == null) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("404 Not found").build());
+        }
 
         return Response.ok(returnedCourse).build();
     }
@@ -50,14 +51,12 @@ public class CourseResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response createCourse(@Valid Course course, @Context UriInfo uriInfo) {
-//        course.setId(Model.getInstance().getCourseIndex());
-//        if (course.getGrades() == null) {
-//            course.setGrades(new ArrayList<>());
-//        }
-//        Model.getInstance().getCourses().add(course);
+        if (course.getGrades() == null) {
+            course.setGrades(new ArrayList<>());
+        }
+        dbSingleton.getDs().save(course);
 
-        //URI uri = uriInfo.getAbsolutePathBuilder().path(Integer.toString(course.getId())).build();
-        URI uri = uriInfo.getBaseUri();
+        URI uri = uriInfo.getAbsolutePathBuilder().path(course.getId().toString()).build();
         return Response.created(uri).entity(course).build();
     }
 
@@ -65,33 +64,26 @@ public class CourseResource {
     @Path("/{courseId}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response updateCourse(@PathParam("courseId") final int courseId, @Valid Course course) {
-//        for (int i = 0; i < Model.getInstance().getCourses().size(); i++) {
-//            Course tempCourse = Model.getInstance().getCourses().get(i);
-//            if (tempCourse.getId() == courseId) {
-//                if (course.getGrades().isEmpty()) {
-//                    course.setGrades(tempCourse.getGrades());
-//                }
-//                Model.getInstance().getCourses().set(i, course);
-//            }
-//        }
+    public Response updateCourse(@PathParam("courseId") final ObjectId courseId, @Valid Course course) {
+        Query <Course> q = dbSingleton.getDs().createQuery(Course.class).filter("_id =", courseId);
+        UpdateOperations<Course> ops;
+        ops = dbSingleton.getDs().createUpdateOperations(Course.class).set("name", course.getName());
+        dbSingleton.getDs().update(q, ops);
+        ops = dbSingleton.getDs().createUpdateOperations(Course.class).set("teacher", course.getTeacher());
+        dbSingleton.getDs().update(q, ops);
 
-        return Response.status(Response.Status.OK).entity(course).build();
+        return Response.status(Response.Status.OK).entity(q.get()).build();
     }
 
     @Path("/{courseId}")
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
-    public Response deleteStudent(@PathParam("courseId") final int courseId) {
+    public Response deleteStudent(@PathParam("courseId") final ObjectId courseId) {
         Response response = null;
-        for (Course course : Model.getInstance().getCourses()) {
-//            if (course.getId() == courseId) {
-//                Model.getInstance().getCourses().remove(course);
-//                response = Response.ok("Course  " + courseId + " removed").build();
-//                break;
-//            }
+        WriteResult wr = dbSingleton.getDs().delete(dbSingleton.getDs().get(Course.class, courseId));
+        if (wr.getN() == 1) {
+            response = Response.ok("Course  " + courseId + " removed").build();
         }
-
         if (response == null) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("404 Not found").build());
         }

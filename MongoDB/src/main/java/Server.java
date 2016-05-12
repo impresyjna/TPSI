@@ -14,7 +14,7 @@ import java.net.URI;
  */
 public class Server {
     public static final String BASE_URI = "http://localhost:8000";
-    //private static Model model = Model.getInstance();
+    private static Model model = Model.getInstance();
 
     public static void main(String[] args) throws Exception {
         //MongoClient mongoClient = new MongoClient();

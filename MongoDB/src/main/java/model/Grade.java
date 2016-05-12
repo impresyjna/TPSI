@@ -48,6 +48,7 @@ public class Grade {
     @Reference
     Student student;
     int courseId;
+    int id;
 
     private static final double[] noteScale = new double[]{2.0, 3.0, 3.5, 4.0, 4.5, 5.0};
 
@@ -70,7 +71,7 @@ public class Grade {
         this.gradeValue = gradeValue;
         this.student = student;
         this.date = new Date();
-        //this.id = new ObjectId();
+        this.id = id;
     }
 
     public double getGradeValue() {
@@ -97,20 +98,19 @@ public class Grade {
         this.student = student;
     }
 
-//    @XmlTransient
-//    public ObjectId getId() {
-//        return id;
-//    }
-//
-//    public void setId(ObjectId id) {
-//        this.id = id;
-//    }
-
     public int getCourseId() {
         return courseId;
     }
 
     public void setCourseId(int courseId) {
         this.courseId = courseId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
