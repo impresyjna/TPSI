@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/students")
 public class StudentResource {
@@ -22,10 +23,19 @@ public class StudentResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Student> getAllStudents() {
+    public List<Student> getAllStudents(@QueryParam("name") String name,
+                                        @QueryParam("surname") String surname) {
         System.out.println("Students index");
         Query<Student> q = dbSingleton.getDs().createQuery(Student.class);
         List<Student> students = q.asList();
+        if(name != null) {
+            students = students.stream().filter(student -> student.getName().equals(name)).
+                    collect(Collectors.toList());
+        }
+        if(surname != null) {
+            students = students.stream().filter(student -> student.getSurname().equals(surname)).
+                    collect(Collectors.toList());
+        }
         return students;
     }
 
