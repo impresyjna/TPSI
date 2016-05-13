@@ -34,6 +34,12 @@ public class GradeResource {
                                     @DefaultValue("more") @QueryParam("direction") String direction, @QueryParam("grade_value") Double gradeValue) {
         Course returnedCourse = null;
         returnedCourse = dbSingleton.getDs().get(Course.class, courseId);
+        Student returnedStudent = null;
+        Query q = dbSingleton.getDs().createQuery(Student.class).filter("index =", index);
+        returnedStudent = (Student) q.get();
+        if (returnedCourse == null || returnedStudent == null) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("404 Not found").build());
+        }
         List<Grade> grades = new ArrayList<>();
         for (Grade grade : returnedCourse.getGrades()) {
             if (grade.getStudent().getIndex() == index) {
@@ -41,7 +47,7 @@ public class GradeResource {
             }
         }
         if (gradeValue != null) {
-//            if (Grade.validateNoteWithValue(gradeValue)) {
+            if (Grade.validateNoteWithValue(gradeValue)) {
                 if (direction.equals("more")) {
                     grades = grades.stream().filter(grade -> grade.getGradeValue() <= gradeValue).collect(Collectors.toList());
                 }
@@ -49,7 +55,7 @@ public class GradeResource {
                     grades = grades.stream().filter(grade -> grade.getGradeValue() > gradeValue).collect(Collectors.toList());
                 }
             }
-//        }
+        }
 
         return grades;
     }
@@ -128,6 +134,7 @@ public class GradeResource {
                     if (grade.getStudent() == null) {
                         grade.setStudent(choosenStudent);
                     }
+                    grade.setId(tempGrade.getId());
                     choosenCourse.getGrades().set(i, grade);
                 }
             }
@@ -138,47 +145,6 @@ public class GradeResource {
             return Response.status(Response.Status.OK).entity(grade).build();
         }
         return Response.status(Response.Status.NOT_MODIFIED).entity(grade).build();
-//        //TODO:
-//        if (grade.validateNote()) {
-//            Course returnedCourse = null;
-//            returnedCourse = dbSingleton.getDs().get(Course.class, courseId);
-//            List<Grade> grades = new ArrayList<>();
-//            for (Grade gradePom : returnedCourse.getGrades()) {
-//                if (gradePom.getStudent().getIndex() == index) {
-//                    grades.add(grade);
-//                }
-//            }
-//            Grade returnedGrade = null;
-//            for (Grade gradePom : grades) {
-//                if (gradePom.getId() == gradeId) {
-//                    returnedGrade = grade;
-//                    break;
-//                }
-//            }
-//            if (returnedGrade == null) {
-//                throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("404 Not found").build());
-//            } else {
-//                Student returnedStudent = null;
-//                Query qPom = dbSingleton.getDs().createQuery(Student.class).filter("index =", index);
-//                returnedStudent = (Student) qPom.get();
-//                for (int i = 0; i < grades.size(); i++) {
-//                    Grade tempGrade = returnedCourse.getGrades().get(i);
-//                    if (tempGrade.getId() == returnedGrade.getId()) {
-//                        if (grade.getStudent() == null) {
-//                            grade.setStudent(returnedStudent);
-//                            grade.setId(tempGrade.getId());
-//                        }
-//                        returnedCourse.getGrades().set(i, grade);
-//                    }
-//                }
-//                Query<Course> q = dbSingleton.getDs().createQuery(Course.class).filter("_id =", courseId);
-//                UpdateOperations<Course> ops;
-//                ops = dbSingleton.getDs().createUpdateOperations(Course.class).set("grades", returnedCourse.getGrades());
-//                dbSingleton.getDs().update(q, ops);
-//                return Response.status(Response.Status.OK).entity(grade).build();
-//            }
-//        }
-//        return Response.status(Response.Status.NOT_MODIFIED).entity(grade).build();
     }
 
     @Path("/{gradeId}")

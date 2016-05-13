@@ -2,12 +2,14 @@ package model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.bson.types.ObjectId;
+import org.glassfish.jersey.linking.Binding;
 import org.glassfish.jersey.linking.InjectLink;
 import org.glassfish.jersey.linking.InjectLinks;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Indexed;
+import rest.StudentResource;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Link;
@@ -25,10 +27,8 @@ import java.util.List;
 @XmlRootElement
 @Entity
 public class Student {
-    @InjectLinks({
-            @InjectLink(resource = rest.StudentResource.class, rel = "parent", method = "getAllStudents",style = InjectLink.Style.ABSOLUTE),
-            @InjectLink(resource = rest.StudentResource.class, rel = "self", method = "getOneStudent", style = InjectLink.Style.ABSOLUTE)
-    })
+    /* @InjectLink(resource = StudentResource.class, method = "getStudent", style = InjectLink.Style.ABSOLUTE,
+            bindings = @Binding(name = "index", value = "${instance.index}"), rel = "self") */
     @XmlElement(name = "links_students")
     @XmlElementWrapper(name = "links_students")
     @XmlJavaTypeAdapter(Link.JaxbAdapter.class)

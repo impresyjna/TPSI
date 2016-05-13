@@ -25,11 +25,11 @@ import java.util.List;
 @XmlRootElement
 @Entity
 public class Course {
-    @InjectLinks({
+    /* @InjectLinks({
             @InjectLink(resource = rest.CourseResource.class, rel = "parent_course", method = "getAllCourses", style = InjectLink.Style.ABSOLUTE),
             @InjectLink(resource = rest.CourseResource.class, rel = "self_course", method = "getOneCourse", style = InjectLink.Style.ABSOLUTE,
                     bindings = {@Binding(name = "courseId", value = "${instance.id}")})
-    })
+    }) */
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     @XmlJavaTypeAdapter(Link.JaxbAdapter.class)

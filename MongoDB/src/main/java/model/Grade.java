@@ -26,7 +26,7 @@ import java.util.List;
 @XmlRootElement
 @Embedded
 public class Grade {
-    @InjectLinks({
+    /* @InjectLinks({
             @InjectLink(resource = rest.GradeResource.class, rel = "parent_course", method = "getAllGrades", style = InjectLink.Style.ABSOLUTE,
                     bindings = {@Binding(name = "courseId", value = "${instance.courseId}"),
                             @Binding(name = "index", value = "${instance.student.index}")}),
@@ -34,7 +34,7 @@ public class Grade {
                     bindings = {@Binding(name = "courseId", value = "${instance.courseId}"),
                             @Binding(name = "index", value = "${instance.student.index}"),
                             @Binding(name = "gradeId", value = "${instance.id}")})
-    })
+    }) */
     @XmlElement(name = "link_grades")
     @XmlElementWrapper(name = "links_grades")
     @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
@@ -57,6 +57,18 @@ public class Grade {
 
         for (double element : noteScale) {
             if (this.gradeValue == element) {
+                result = true;
+            }
+        }
+
+        return result;
+    }
+
+    public static boolean validateNoteWithValue(double gradeValue) {
+        boolean result = false;
+
+        for (double element : noteScale) {
+            if (gradeValue == element) {
                 result = true;
             }
         }

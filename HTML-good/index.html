@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Student Grade Manager</title>
+        <style>
+            #students {
+              display: none;
+            }
+
+            #students:target {
+              display: block;
+            }
+            #grades {
+              display: none;
+            }
+
+            #grades:target {
+              display: block;
+            }
+            #courses {
+              display: none;
+            }
+
+            #courses:target {
+              display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <header><h1>Student Grade Manager</h1></header>
+        <nav>
+            <a href="#students">Manage students</a>
+            <a href="#courses">Manage courses</a>
+        </nav>
+        <article id="students">
+            <h3>List of students</h3>
+             <table>
+              <tr>
+                <th>Index</th>
+                <th>Name</th>
+                <th>Surname</th>		
+                <th>BirthDate</th>
+              </tr>
+              <tr>
+                <td>109708</td>
+                <td>Aaa</td>		
+                <td>Bbb</td>
+                <td>1993-07-18</td>
+                <td><button>Delete</button></td>
+                <td><a href="#grades">See grades</a></td>  
+              </tr>
+            </table>
+        </article>
+        <article id="grades">
+            <h3>List of grades for student</h3>
+            <table>
+              <tr>
+                <th>Date</th>
+                <th>Value</th>
+                <th>CourseId</th>		
+              </tr>
+              <tr>
+                <td>2016-05-04</td>
+                <td>3.5</td>		
+                <td>2</td>
+                <td><button>Delete</button></td>
+              </tr>
+            </table>
+        </article>
+        <article id="courses">
+            <h3>List of courses</h3>
+            <table>
+              <tr>
+                <th>Name</th>
+                <th>Teacher</th>
+              </tr>
+              <tr>
+                <td>Analiza matematyczna</td>
+                <td>Doktor AAA BBB</td>
+                <td><button>Delete</button></td>  
+              </tr>
+            </table>
+        </article>
+        <footer>
+        <p>®Joanna Furmaniak</p>
+        <p>Instytute of Computing Science</p>
+        <p><a href="http://www.put.poznan.pl/">Poznan University of Technology</a></p></footer>
+    </body>
+</html>
