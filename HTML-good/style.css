@@ -1,0 +1,42 @@
+#students {
+              display: none;
+            }
+
+            #students:target {
+              display: block;
+            }
+            #grades {
+              display: none;
+            }
+
+            #grades:target {
+              display: block;
+            }
+            #courses {
+              display: none;
+            }
+
+            #courses:target {
+              display: block;
+            }
+#edit_form_student {
+              display: none;
+            }
+
+            #edit_form_student:target {
+              display: block;
+            }
+#edit_form_grade {
+              display: none;
+            }
+
+            #edit_form_grade:target {
+              display: block;
+            }
+#edit_form_course {
+              display: none;
+            }
+
+            #edit_form_course:target {
+              display: block;
+            }
