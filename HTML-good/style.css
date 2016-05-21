@@ -1,42 +1,101 @@
+body {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+header, nav, article, footer {
+    flex: 1 100%;
+}
+
+@media all and (min-width: 600px) {
+    /* We tell both sidebars to share a row */
+    nav {
+        flex: 1 auto;
+    }
+}
+
+/* Large screens */
+@media all and (min-width: 800px) {
+    /* We invert order of first sidebar and main
+     * And tell the main element to take twice as much width as the other two sidebars
+     */
+    article {
+        flex: 2 auto;
+    }
+
+    footer {
+        order: 3;
+    }
+}
+
+header {
+    background: linear-gradient( 45deg, #E8D04C,  #FF7D53 );
+    display: flex;
+    border-radius: 5px;
+}
+
+nav {
+    display: inline-flex;
+    flex-flow: column;
+}
+
+.nav_button {
+    background-color: ;
+}
+
+/*article {*/
+/*flex: 1 100%;*/
+/*}*/
+
+/*footer {*/
+/*flex: auto;*/
+/*flex-flow: row wrap;*/
+/*}*/
+
 #students {
-              display: none;
-            }
+    display: none;
+}
 
-            #students:target {
-              display: block;
-            }
-            #grades {
-              display: none;
-            }
+#students:target {
+    display: block;
+}
 
-            #grades:target {
-              display: block;
-            }
-            #courses {
-              display: none;
-            }
+#grades {
+    display: none;
+}
 
-            #courses:target {
-              display: block;
-            }
+#grades:target {
+    display: block;
+}
+
+#courses {
+    display: none;
+}
+
+#courses:target {
+    display: block;
+}
+
 #edit_form_student {
-              display: none;
-            }
+    display: none;
+}
 
-            #edit_form_student:target {
-              display: block;
-            }
+#edit_form_student:target {
+    display: block;
+}
+
 #edit_form_grade {
-              display: none;
-            }
+    display: none;
+}
 
-            #edit_form_grade:target {
-              display: block;
-            }
+#edit_form_grade:target {
+    display: block;
+}
+
 #edit_form_course {
-              display: none;
-            }
+    display: none;
+}
 
-            #edit_form_course:target {
-              display: block;
-            }
+#edit_form_course:target {
+    display: block;
+}
