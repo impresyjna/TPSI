@@ -1,56 +1,137 @@
 body {
     display: flex;
     flex-flow: row wrap;
+    font-size: 1.2em;
+    font-family: Beirut;
 }
 
-header, nav, article, footer {
-    flex: 1 100%;
+body > header {
+    display: flex;
+    flex: 100%;
 }
 
-@media all and (min-width: 600px) {
-    /* We tell both sidebars to share a row */
-    nav {
-        flex: 1 auto;
-    }
+/* We tell both sidebars to share a row */
+nav {
+    flex: 1 0 150px;
+    min-width: 150px;
 }
 
-/* Large screens */
-@media all and (min-width: 800px) {
-    /* We invert order of first sidebar and main
-     * And tell the main element to take twice as much width as the other two sidebars
-     */
-    article {
-        flex: 2 auto;
-    }
 
-    footer {
-        order: 3;
-    }
+nav > * {
+    display: inline-block;
+    width: 120px;
+    padding: 10px;
+    margin: 10px 10px;
+    background-color: #000a67;
+    color: aliceblue;
+    text-align: center;
+}
+/* We invert order of first sidebar and main
+ * And tell the main element to take twice as much width as the other two sidebars
+ */
+article {
+    flex: 80%;
+    margin: 15px;
+    min-width: 100px;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Comic Sans MS";
+}
 header {
-    background: linear-gradient( 45deg, #E8D04C,  #FF7D53 );
+    background: linear-gradient(45deg, #ffed4d, #ff944d);
     display: flex;
     border-radius: 5px;
-}
-
-nav {
-    display: inline-flex;
-    flex-flow: column;
+    height: auto;
 }
 
 .nav_button {
-    background-color: ;
+    background-color: #fff;
 }
 
-/*article {*/
-/*flex: 1 100%;*/
-/*}*/
+footer {
+    flex: 100%;
+    background: linear-gradient(45deg, #ff4d5f, #ffed4d);
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 0.7em;
+}
 
-/*footer {*/
-/*flex: auto;*/
-/*flex-flow: row wrap;*/
-/*}*/
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+table > tbody > tr > th {
+    background-color: #000a67;
+    color: aliceblue;
+}
+
+tr:nth-child(odd)  {
+    background-color: #ff4d5f;
+}
+
+tr:nth-child(even) {
+    background-color: #ffed4d;
+}
+
+td, th {
+    border: 1px solid #000a67;
+    width: auto;
+}
+
+table tr:hover > td {
+    background: #ff944d;
+}
+
+input {
+    line-height: 20px;
+    font-size: 1em;
+    font-family: Beirut;
+    border: 1px solid #000a67;
+    height: 24px;
+}
+
+select {
+    line-height: 20px;
+    border: 1px solid #C5CAE9;
+    font-family: Beirut;
+    font-size: 1em;
+    height: 24px;
+}
+
+button {
+    font-family: Beirut;
+    font-size: 1em;
+
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    text-align: center;
+    width: 100%;
+}
+
+
+input[type="submit"] {
+    line-height: 20px;
+    font-size: 1em;
+    font-family: Beirut;
+    border: 1px solid #000a67;
+    height: 24px;
+    background: #000a67;
+    color: aliceblue;
+}
+
+input, select{
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
 
 #students {
     display: none;
@@ -98,4 +179,27 @@ nav {
 
 #edit_form_course:target {
     display: block;
+}
+
+@media only print {
+    th, td {
+        background: #FFFFFF;
+        color: #000000;
+        border-bottom: 1px solid #B6B6B6;
+        width: auto;
+    }
+
+    input, select {
+        border: none;
+    }
+
+    select {
+        -moz-appearance: none;
+        -webkit-appearance: none;
+    }
+
+    body > header , footer, nav, th input, th:last-child, td:last-child, a, input[type="submit"], button, .no_print  {
+        display: none;
+    }
+
 }
