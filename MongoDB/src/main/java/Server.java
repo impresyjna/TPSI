@@ -40,7 +40,7 @@ public class Server {
         DateParamConverterProvider dateParamConverterProvider = new DateParamConverterProvider("yyyy-MM-dd");
         final ResourceConfig rc = new ResourceConfig()
                 .packages("rest")
-                .register(DeclarativeLinkingFeature.class).register(dateParamConverterProvider);
+                .register(DeclarativeLinkingFeature.class).register(dateParamConverterProvider).register(other.CustomHeaders.class);
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 }

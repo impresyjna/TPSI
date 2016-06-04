@@ -113,6 +113,7 @@ table {
     border-spacing: 0;
     text-align: center;
     width: 100%;
+    font-size: 0.9em;
 }
 
 
@@ -181,7 +182,7 @@ input, select{
     display: block;
 }
 
-@media only print {
+@media print {
     th, td {
         background: #FFFFFF;
         color: #000000;
@@ -189,6 +190,11 @@ input, select{
         width: auto;
     }
 
+    table > tbody > tr > th  {
+       color: #000;
+       font-weight: bold;
+        background: #fff;
+    }
     input, select {
         border: none;
     }
@@ -201,5 +207,7 @@ input, select{
     body > header , footer, nav, th input, th:last-child, td:last-child, a, input[type="submit"], button, .no_print  {
         display: none;
     }
+
+
 
 }

@@ -5,8 +5,12 @@
     <title>Student Grade Manager</title>
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.4.1.min.js"></script>
-    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.3.0.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.js"
+            defer></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"
+            defer></script>
+    <script type="text/javascript" src="script.js" defer></script>
+    <script type="text/javascript" src="knockout.mapping-latest.js" defer></script>
 </head>
 <body>
 <header>
@@ -24,6 +28,7 @@
     <h3>List of students</h3>
     <a href="#edit_form_student">Add new student</a>
     <table>
+        <thead>
         <tr>
             <th>Index</th>
             <th>Name</th>
@@ -32,11 +37,13 @@
             <th class="no_print"></th>
             <th class="no_print"></th>
         </tr>
+        </thead>
+        <tbody data-bind="foreach: students">
         <tr>
-            <td>109708</td>
-            <td>Aaa</td>
-            <td>Bbb</td>
-            <td>1993-07-18</td>
+            <td data-bind="text: index"></td>
+            <td data-bind="text: name"></td>
+            <td data-bind="text: surname"></td>
+            <td data-bind="text: dateOfBirth"></td>
             <td class="no_print">
                 <button>Delete</button>
             </td>
@@ -44,20 +51,9 @@
                 <button>Edit</button>
             </td>
         </tr>
-        <tr>
-            <td>109708</td>
-            <td>Aaa</td>
-            <td>Bbb</td>
-            <td>1993-07-18</td>
-            <td class="no_print">
-                <button>Delete</button>
-            </td>
-            <td class="no_print">
-                <button>Edit</button>
-            </td>
-        </tr>
+        </tbody>
     </table>
-    <h4>Filtrs:</h4>
+    <h4>Filters:</h4>
     <form>
         <input type="text" name="name" placeholder="Name">
         <input type="text" name="surname" placeholder="Surname">
@@ -104,7 +100,7 @@
             </td>
         </tr>
     </table>
-    <h4>Filtrs:</h4>
+    <h4>Filters:</h4>
     <form>
         Grade:
         <select name="grade_value">
@@ -156,7 +152,7 @@
             <th>Name</th>
             <th>Teacher</th>
             <th class="no_print"></th>
-            <th class="no_print"> </th>
+            <th class="no_print"></th>
         </tr>
         <tr>
             <td>Analiza matematyczna</td>
@@ -167,7 +163,7 @@
             <td class="no_print"><a href="#grades">See grades</a></td>
         </tr>
     </table>
-    <h4>Filtrs:</h4>
+    <h4>Filters:</h4>
     <form>
         <input type="text" name="teacher" placeholder="Teacher">
         <input type="submit" value="Submit">
