@@ -27,10 +27,14 @@ import java.util.List;
 @XmlRootElement
 @Entity
 public class Student {
-    /* @InjectLink(resource = StudentResource.class, method = "getStudent", style = InjectLink.Style.ABSOLUTE,
-            bindings = @Binding(name = "index", value = "${instance.index}"), rel = "self") */
-    @XmlElement(name = "links_students")
-    @XmlElementWrapper(name = "links_students")
+    @InjectLinks({
+        @InjectLink(resource = StudentResource.class, method = "getOneStudent", style = InjectLink.Style.ABSOLUTE,
+                bindings = @Binding(name = "index", value = "${instance.index}"), rel = "self"),
+        @InjectLink(resource = StudentResource.class, method = "getGrades", style = InjectLink.Style.ABSOLUTE,
+                bindings = @Binding(name = "index", value = "${instance.index}"), rel = "grades")
+    })
+    @XmlElement(name="link")
+    @XmlElementWrapper(name = "links")
     @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
     List<Link> links;
 

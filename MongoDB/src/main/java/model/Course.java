@@ -8,6 +8,7 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import other.ObjectIdJaxbAdapter;
+import rest.CourseResource;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Link;
@@ -18,6 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by impresyjna on 19.04.2016.
@@ -25,11 +27,16 @@ import java.util.List;
 @XmlRootElement
 @Entity
 public class Course {
-    /* @InjectLinks({
-            @InjectLink(resource = rest.CourseResource.class, rel = "parent_course", method = "getAllCourses", style = InjectLink.Style.ABSOLUTE),
-            @InjectLink(resource = rest.CourseResource.class, rel = "self_course", method = "getOneCourse", style = InjectLink.Style.ABSOLUTE,
-                    bindings = {@Binding(name = "courseId", value = "${instance.id}")})
-    }) */
+    @InjectLinks({
+            @InjectLink(resource = CourseResource.class, method = "getOneCourse", style = InjectLink.Style.ABSOLUTE,
+                    bindings = @Binding(name = "courseId", value = "${instance.id}"), rel = "self"),
+            @InjectLink(resource = CourseResource.class, method = "getGrades", style = InjectLink.Style.ABSOLUTE,
+                    bindings = {
+                            @Binding(name = "courseId", value = "${instance.id}"),
+                            @Binding(name = "direction", value = ""),
+                            @Binding(name = "note", value = "")
+                    }, rel = "grades")
+    })
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
@@ -86,5 +93,9 @@ public class Course {
 
     public void setGrades(List<Grade> grades) {
         this.grades = grades;
+    }
+
+    public List<Grade> getStudentGradesList(long index) {
+        return grades.stream().filter(grade -> grade.getStudent().getIndex() == index).collect(Collectors.toList());
     }
 }

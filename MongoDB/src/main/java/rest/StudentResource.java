@@ -1,6 +1,8 @@
 package rest;
 
 import com.mongodb.WriteResult;
+import model.Course;
+import model.Grade;
 import model.Student;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
@@ -14,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -96,7 +99,7 @@ public class StudentResource {
         dbSingleton.getDs().update(query, ops);
         ops = dbSingleton.getDs().createUpdateOperations(Student.class).set("surname", student.getSurname());
         dbSingleton.getDs().update(query, ops);
-        ops = dbSingleton.getDs().createUpdateOperations(Student.class).set("birthDate", student.getDateOfBirth());
+        ops = dbSingleton.getDs().createUpdateOperations(Student.class).set("dateOfBirth", student.getDateOfBirth());
         dbSingleton.getDs().update(query, ops);
 
         return Response.status(Response.Status.OK).entity(student).build();
@@ -106,16 +109,32 @@ public class StudentResource {
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
     public Response deleteStudent(@PathParam("index") final long index) {
-        Response response = null;
-        WriteResult wr = dbSingleton.getDs().delete(dbSingleton.getDs().createQuery(Student.class).filter("index =", index));
-        if (wr.getN() == 1) {
-            response = Response.ok("Student  " + index + " removed").build();
+        Student student = dbSingleton.getDs().find(Student.class).field("index").equal(index).get();
+
+        if(student == null) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Not found").build());
         }
 
-        if (response == null) {
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("404 Not found").build());
+        List<Course> courses = dbSingleton.getDs().find(Course.class).asList();
+        for(Course course: courses) {
+            course.getGrades().removeAll(course.getStudentGradesList(index));
+            dbSingleton.getDs().save(course);
         }
+        dbSingleton.getDs().delete(student);
 
-        return response;
+        return Response.ok("Student with index " + index + " removed").build();
+    }
+
+
+    @Path("/{index}/grades")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Grade> getGrades(@PathParam("index") final long index) {
+        List<Course> courses = dbSingleton.getDs().find(Course.class).asList();
+
+        List<Grade> grades = new ArrayList<>();
+        courses.stream().forEach(course -> grades.addAll(course.getStudentGradesList(index)));
+
+        return grades;
     }
 }

@@ -40,15 +40,16 @@
         </thead>
         <tbody data-bind="foreach: students">
         <tr>
-            <td data-bind="text: index"></td>
-            <td data-bind="text: name"></td>
-            <td data-bind="text: surname"></td>
-            <td data-bind="text: dateOfBirth"></td>
+            <td><input placeholder="Index" type="number" data-bind="value: index" readonly step="1" min="0" max="999999"
+                       required/></td>
+            <td><input placeholder="Name" type="text" data-bind="value: name" required/></td>
+            <td><input placeholder="Surname" type="text" data-bind="value: surname" required/></td>
+            <td><input type="date" data-bind="value: dateOfBirth" min="1950-01-01" max="2016-05-20" required/></td>
             <td class="no_print">
-                <button>Delete</button>
+                <button data-bind="click: $parent.students.delete">Delete</button>
             </td>
             <td class="no_print">
-                <button>Edit</button>
+                <button data-bind="click: $parent.students.getGrades">See grades</button>
             </td>
         </tr>
         </tbody>
@@ -71,11 +72,11 @@
 <!-- Edit form for student -->
 <article id="edit_form_student">
     <h3>Add/Edit Student</h3>
-    <form>
+    <form data-bind="submit: students.new">
         <input type="text" name="name" placeholder="Name" required>
         <input type="text" name="surname" placeholder="Surname" required>
         <input type="number" name="index" placeholder="Index" required>
-        Birth date: <input type="date" name="birth_date" required>
+        Birth date: <input type="date" name="dateOfBirth" required>
         <input type="submit" value="Submit">
     </form>
 </article>
@@ -85,20 +86,35 @@
     <h3>List of grades on course</h3>
     <a href="#edit_form_grade">Add new grade</a>
     <table>
+        <thead>
         <tr>
             <th>Date</th>
             <th>Value</th>
-            <th>Student index</th>
+            <th>Student</th>
+            <th>Course name</th>
             <th class="no_print"></th>
         </tr>
+        </thead>
+        <tbody data-bind="foreach: grades">
         <tr>
-            <td>2016-05-04</td>
-            <td>3.5</td>
-            <td>109708</td>
+            <td><input type="date" data-bind="value: date" min="1950-01-01" max="2016-05-20" required/></td>
+            <td><input placeholder="Grade" type="number" data-bind="value: gradeValue" requiredstep="0.5" min="2.0" max="5.0"/></td>
+            <td>
+                <input placeholder="Student" type="number" data-bind="value: student.index" readonly step="1" min="0" max="999999"
+                       required/>
+            </td>
+            <td>
+                <select required disabled data-bind="options: $parent.courses,
+                                                      optionsText: function(i) { return i.name(); },
+                                                      optionsValue: function(i) { return i.id(); },
+                                                      optionsCaption: 'Choose subject...',
+                                                      value: courseId"/>
+            </td>
             <td class="no_print">
-                <button>Delete</button>
+                <button data-bind="click: $parent.grades.delete">Delete</button>
             </td>
         </tr>
+        </tbody>
     </table>
     <h4>Filters:</h4>
     <form>
@@ -124,21 +140,24 @@
 <!-- Edit form for grade -->
 <article id="edit_form_grade">
     <h3>Add/Edit Grade</h3>
-    <form>
+    <form data-bind="submit: grades.newGrade">
         Grade:
-        <select name="grade_value">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="3.5">3.5</option>
-            <option value="4">4</option>
-            <option value="4.5">4.5</option>
-            <option value="5">5</option>
-        </select>
+        <input name="gradeValue" placeholder="Grade value" type="number" required step="0.5" min="2.0" max="5.0"/>
+        <br>
         Student index:
-        <select name="Student">
-            <option value="2">109708</option>
-            <option value="3">19729</option>
-        </select>
+        <select name="student.index" required data-bind="options: model.students,
+                                                      optionsText: function(i) { return i.name() + ' ' + i.surname(); },
+                                                      optionsValue: function(i) { return i.index(); },
+                                                      optionsCaption: 'Choose student...',
+                                                      enable: !model.grades.selectedStudent()"></select>
+        <br>
+        Course:
+        <select name="courseId" required data-bind="options: model.courses,
+                                                      optionsText: function(i) { return i.name(); },
+                                                      optionsValue: function(i) { return i.id(); },
+                                                      optionsCaption: 'Choose subject...',
+                                                      enable: !model.grades.selectedCourse()"></select>
+        <input name="date" type="date" min="1950-01-01" max="2016-05-20" required/>
         <input type="submit" value="Submit">
     </form>
 </article>
@@ -148,20 +167,26 @@
     <h3>List of courses</h3>
     <a href="#edit_form_course">Add new course</a>
     <table>
+        <thead>
         <tr>
             <th>Name</th>
             <th>Teacher</th>
             <th class="no_print"></th>
             <th class="no_print"></th>
         </tr>
+        </thead>
+        <tbody data-bind="foreach: courses">
         <tr>
-            <td>Analiza matematyczna</td>
-            <td>Doktor AAA BBB</td>
+            <td><input placeholder="Course name" type="text" data-bind="value: name" required/></td>
+            <td><input placeholder="Teacher" type="text" data-bind="value: teacher" required/></td>
             <td class="no_print">
-                <button>Delete</button>
+                <button data-bind="click: $parent.courses.delete">Delete</button>
             </td>
-            <td class="no_print"><a href="#grades">See grades</a></td>
+            <td class="no_print">
+                <button data-bind="click: $parent.courses.getGrades">See grades</button>
+            </td>
         </tr>
+        </tbody>
     </table>
     <h4>Filters:</h4>
     <form>
@@ -172,7 +197,7 @@
 
 <article id="edit_form_course">
     <h3>Add/edit course</h3>
-    <form>
+    <form data-bind="submit: courses.new">
         <input type="text" name="teacher" placeholder="Teacher">
         <input type="text" name="name" placeholder="Name">
         <input type="submit" value="Submit">

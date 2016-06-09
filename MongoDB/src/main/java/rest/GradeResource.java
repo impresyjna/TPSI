@@ -101,6 +101,7 @@ public class GradeResource {
             }
             GradeIterator gradeIterator = dbSingleton.getDs().createQuery(GradeIterator.class).get();
             grade.setId(gradeIterator.getValue());
+            grade.setCourseId(choosenCourse.getId().toString());
             Query<GradeIterator> qPom = dbSingleton.getDs().createQuery(GradeIterator.class);
             UpdateOperations<GradeIterator> pomOps;
             pomOps = dbSingleton.getDs().createUpdateOperations(GradeIterator.class).set("value", gradeIterator.getValue() + 1);

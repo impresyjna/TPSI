@@ -2,6 +2,7 @@ package rest;
 
 import com.mongodb.WriteResult;
 import model.Course;
+import model.Grade;
 import model.Student;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
@@ -26,13 +27,14 @@ import java.util.stream.Collectors;
 @Path("/courses")
 public class CourseResource {
     DbSingleton dbSingleton = DbSingleton.getInstance();
+
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Course> getAllCourses(@QueryParam("teacher") String teacher) {
         System.out.println("Courses index");
         Query<Course> q = dbSingleton.getDs().createQuery(Course.class);
         List<Course> courses = q.asList();
-        if(teacher != null) {
+        if (teacher != null) {
             courses = courses.stream().filter(course -> course.getTeacher().equals(teacher)).
                     collect(Collectors.toList());
         }
@@ -56,9 +58,7 @@ public class CourseResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response createCourse(@Valid Course course, @Context UriInfo uriInfo) {
-        if (course.getGrades() == null) {
-            course.setGrades(new ArrayList<>());
-        }
+        course.setGrades(new ArrayList<>());
         dbSingleton.getDs().save(course);
 
         URI uri = uriInfo.getAbsolutePathBuilder().path(course.getId().toString()).build();
@@ -70,7 +70,7 @@ public class CourseResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response updateCourse(@PathParam("courseId") final ObjectId courseId, @Valid Course course) {
-        Query <Course> q = dbSingleton.getDs().createQuery(Course.class).filter("_id =", courseId);
+        Query<Course> q = dbSingleton.getDs().createQuery(Course.class).filter("_id =", courseId);
         UpdateOperations<Course> ops;
         ops = dbSingleton.getDs().createUpdateOperations(Course.class).set("name", course.getName());
         dbSingleton.getDs().update(q, ops);
@@ -94,6 +94,35 @@ public class CourseResource {
         }
 
         return response;
+    }
+
+    @Path("/{courseId}/grades")
+    @GET
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Grade> getGrades(@PathParam("courseId") final ObjectId courseId,
+                                 @DefaultValue("1") @QueryParam("direction") int direction, @QueryParam("note") Double note) {
+        Course course = dbSingleton.getDs().get(Course.class, courseId);
+        if (course == null) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Not found").build());
+        }
+
+        List<Grade> grades = course.getGrades();
+        if (note != null) {
+            if (Grade.validateNoteWithValue(note)) {
+                switch (direction) {
+                    case -1:
+                        grades = grades.stream().filter(grade -> grade.getGradeValue() <= note).collect(Collectors.toList());
+                        break;
+                    case 1:
+                        grades = grades.stream().filter(grade -> grade.getGradeValue() >= note).collect(Collectors.toList());
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return grades;
     }
 
 }
