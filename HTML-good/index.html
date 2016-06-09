@@ -107,9 +107,9 @@
             <td>
                 <select required disabled data-bind="options: $parent.courses,
                                                       optionsText: function(i) { return i.name(); },
-                                                      optionsValue: function(i) { return i.id(); },
+                                                      optionsValue: function(i) { return i.courseId(); },
                                                       optionsCaption: 'Choose subject...',
-                                                      value: courseId"/>
+                                                      value: courseId"></select>
             </td>
             <td class="no_print">
                 <button data-bind="click: $parent.grades.delete">Delete</button>
@@ -157,7 +157,6 @@
                                                       optionsText: function(i) { return i.name(); },
                                                       optionsValue: function(i) { return i.courseId(); },
                                                       optionsCaption: 'Choose subject...',
-                                                      value: model.grades.selectedCourse,
                                                       enable: !model.grades.selectedCourse()"/>
         <input name="date" type="date" min="1950-01-01" max="2016-05-20" required/>
         <input type="submit" value="Submit">

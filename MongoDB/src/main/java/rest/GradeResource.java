@@ -73,7 +73,7 @@ public class GradeResource {
         }
         Grade returnedGrade = null;
         for (Grade grade : grades) {
-            if (grade.getId() == gradeId) {
+            if (grade.getGradeId() == gradeId) {
                 returnedGrade = grade;
                 break;
             }
@@ -97,7 +97,7 @@ public class GradeResource {
             studentForGrade = dbSingleton.getDs().createQuery(Student.class).filter("index =", index).get();
             grade.setStudent(studentForGrade);
             GradeIterator gradeIterator = dbSingleton.getDs().createQuery(GradeIterator.class).get();
-            grade.setId(gradeIterator.getValue());
+            grade.setGradeId(gradeIterator.getValue());
             grade.setCourseId(choosenCourse.getCourseId().toString());
             Query<GradeIterator> qPom = dbSingleton.getDs().createQuery(GradeIterator.class);
             UpdateOperations<GradeIterator> pomOps;
@@ -109,7 +109,7 @@ public class GradeResource {
             ops = dbSingleton.getDs().createUpdateOperations(Course.class).set("grades", choosenCourse.getGrades());
             dbSingleton.getDs().update(q, ops);
 
-            URI uri = uriInfo.getAbsolutePathBuilder().path(Integer.toString(grade.getId())).build();
+            URI uri = uriInfo.getAbsolutePathBuilder().path(Integer.toString(grade.getGradeId())).build();
             return Response.created(uri).entity(grade).build();
         }
         return Response.status(Response.Status.NOT_MODIFIED).entity(grade).build();
@@ -128,11 +128,11 @@ public class GradeResource {
             choosenStudent = (Student) qPom.get();
             for (int i = 0; i < choosenCourse.getGrades().size(); i++) {
                 Grade tempGrade = choosenCourse.getGrades().get(i);
-                if (tempGrade.getId() == gradeId) {
+                if (tempGrade.getGradeId() == gradeId) {
                     if (grade.getStudent() == null) {
                         grade.setStudent(choosenStudent);
                     }
-                    grade.setId(tempGrade.getId());
+                    grade.setGradeId(tempGrade.getGradeId());
                     choosenCourse.getGrades().set(i, grade);
                 }
             }
@@ -155,7 +155,7 @@ public class GradeResource {
         if (choosenCourse != null) {
             List<Grade> grades = choosenCourse.getGrades();
             for (Grade grade1 : grades) {
-                if (grade1.getId() == gradeId) {
+                if (grade1.getGradeId() == gradeId) {
                     grades.remove(grade1);
                     response = Response.ok("Grade  " + gradeId + " removed").build();
                     Query<Course> q = dbSingleton.getDs().createQuery(Course.class).filter("_id =", courseId);

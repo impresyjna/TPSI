@@ -111,6 +111,7 @@ var dataFromServer = function (url, idAttr) {
         $(form).serializeArray().map(function(x) {
             data[x.name] = x.value;
         });
+        data[idAttr] = null;
         self.push(ko.mapping.fromJS(data));
         $(form).each(function() {
             this.reset();
@@ -126,7 +127,6 @@ var dataFromServer = function (url, idAttr) {
 
     self.delete = function() {
         self.remove(this);
-        self.deleteRequest(this);
     }
 
     return self;
@@ -149,13 +149,13 @@ function viewModel() {
     self.courses.getGrades = function () {
         window.location = "#grades";
         self.grades.selectedStudent(null);
-        self.grades.selectedCourse(this.id());
+        self.grades.selectedCourse(this.courseId());
         self.grades.url = this.links["grades"];
         self.grades.get();
     }
     self.courses.get();
 
-    self.grades = new dataFromServer(hostAddress + "grades", "id");
+    self.grades = new dataFromServer(hostAddress + "grades", "gradeId");
     self.grades.selectedCourse = ko.observable();
     self.grades.selectedStudent = ko.observable();
 }

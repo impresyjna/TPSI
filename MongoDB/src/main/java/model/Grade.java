@@ -1,15 +1,11 @@
 package model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.bson.types.ObjectId;
 import org.glassfish.jersey.linking.Binding;
 import org.glassfish.jersey.linking.InjectLink;
 import org.glassfish.jersey.linking.InjectLinks;
 import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Reference;
-import other.GradeValue;
-import other.ObjectIdJaxbAdapter;
 import rest.CourseResource;
 import rest.GradeResource;
 import rest.StudentResource;
@@ -19,7 +15,6 @@ import javax.ws.rs.core.Link;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 import java.util.List;
@@ -56,7 +51,7 @@ public class Grade {
     @Reference
     Student student;
     String courseId;
-    int id;
+    int gradeId;
 
     private static final double[] noteScale = new double[]{2.0, 3.0, 3.5, 4.0, 4.5, 5.0};
 
@@ -87,11 +82,11 @@ public class Grade {
     public Grade() {
     }
 
-    public Grade(double gradeValue, Student student, int id) {
+    public Grade(double gradeValue, Student student, int gradeId) {
         this.gradeValue = gradeValue;
         this.student = student;
         this.date = new Date();
-        this.id = id;
+        this.gradeId = gradeId;
     }
 
     public double getGradeValue() {
@@ -126,11 +121,11 @@ public class Grade {
         this.courseId = courseId;
     }
 
-    public int getId() {
-        return id;
+    public int getGradeId() {
+        return gradeId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setGradeId(int gradeId) {
+        this.gradeId = gradeId;
     }
 }
