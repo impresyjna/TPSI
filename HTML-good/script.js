@@ -61,6 +61,7 @@ var dataFromServer = function (url, idAttr) {
             success: function(data) {
                 var response = ko.mapping.fromJS(data);
 
+                object[idAttr](response[idAttr]());
                 object.links = [];
 
                 if($.isArray(data.link)) {
@@ -114,7 +115,6 @@ var dataFromServer = function (url, idAttr) {
         $(form).each(function() {
             this.reset();
         });
-        self.createRequest(ko.mapping.fromJS(data), self.url);
     }
 
     self.deleteRequest = function(object) {
@@ -145,7 +145,7 @@ function viewModel() {
     }
     self.students.get();
 
-    self.courses = new dataFromServer(hostAddress + "courses", "id");
+    self.courses = new dataFromServer(hostAddress + "courses", "courseId");
     self.courses.getGrades = function () {
         window.location = "#grades";
         self.grades.selectedStudent(null);
