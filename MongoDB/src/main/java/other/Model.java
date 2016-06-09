@@ -71,7 +71,7 @@ public class Model {
         Grade grade6 = new Grade(2.0, student4, 5);
         course1.getGrades().add(grade6);
 
-//        dbSingleton.getDs().save(new GradeIterator(6));
+        dbSingleton.getDs().save(new GradeIterator(0));
 //        dbSingleton.getDs().save(courses);
 //        dbSingleton.getDs().save(students);
 

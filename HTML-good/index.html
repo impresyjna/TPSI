@@ -5,6 +5,7 @@
     <title>Student Grade Manager</title>
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.js"
             defer></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"
@@ -154,9 +155,10 @@
         Course:
         <select name="courseId" required data-bind="options: model.courses,
                                                       optionsText: function(i) { return i.name(); },
-                                                      optionsValue: function(i) { return i.id(); },
+                                                      optionsValue: function(i) { return i.courseId(); },
                                                       optionsCaption: 'Choose subject...',
-                                                      enable: !model.grades.selectedCourse()"></select>
+                                                      value: model.grades.selectedCourse,
+                                                      enable: !model.grades.selectedCourse()"/>
         <input name="date" type="date" min="1950-01-01" max="2016-05-20" required/>
         <input type="submit" value="Submit">
     </form>

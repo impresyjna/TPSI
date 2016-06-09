@@ -3,12 +3,10 @@ package rest;
 import com.mongodb.WriteResult;
 import model.Course;
 import model.Grade;
-import model.Student;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import other.DbSingleton;
-import other.Model;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -61,7 +59,7 @@ public class CourseResource {
         course.setGrades(new ArrayList<>());
         dbSingleton.getDs().save(course);
 
-        URI uri = uriInfo.getAbsolutePathBuilder().path(course.getId().toString()).build();
+        URI uri = uriInfo.getAbsolutePathBuilder().path(course.getCourseId().toString()).build();
         return Response.created(uri).entity(course).build();
     }
 

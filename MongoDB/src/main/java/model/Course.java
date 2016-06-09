@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 public class Course {
     @InjectLinks({
             @InjectLink(resource = CourseResource.class, method = "getOneCourse", style = InjectLink.Style.ABSOLUTE,
-                    bindings = @Binding(name = "courseId", value = "${instance.id}"), rel = "self"),
+                    bindings = @Binding(name = "courseId", value = "${instance.courseId}"), rel = "self"),
             @InjectLink(resource = CourseResource.class, method = "getGrades", style = InjectLink.Style.ABSOLUTE,
                     bindings = {
-                            @Binding(name = "courseId", value = "${instance.id}"),
+                            @Binding(name = "courseId", value = "${instance.courseId}"),
                             @Binding(name = "direction", value = ""),
                             @Binding(name = "note", value = "")
                     }, rel = "grades")
@@ -44,7 +44,7 @@ public class Course {
 
     @XmlJavaTypeAdapter(ObjectIdJaxbAdapter.class)
     @Id
-    ObjectId id;
+    ObjectId courseId;
 
     @NotNull
     String name;
@@ -59,16 +59,16 @@ public class Course {
     public Course(String name, String teacher) {
         this.name = name;
         this.teacher = teacher;
-        this.id = new ObjectId();
+        this.courseId = new ObjectId();
     }
 
     @XmlTransient
-    public ObjectId getId() {
-        return id;
+    public ObjectId getCourseId() {
+        return courseId;
     }
 
-    public void setId(ObjectId id) {
-        this.id = id;
+    public void setCourseId(ObjectId courseId) {
+        this.courseId = courseId;
     }
 
     public String getName() {

@@ -8,7 +8,6 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import other.DbSingleton;
-import other.Model;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -94,14 +93,12 @@ public class GradeResource {
         Course choosenCourse = null;
         choosenCourse = dbSingleton.getDs().get(Course.class, courseId);
         if (grade.validateNote()) {
-            if (grade.getStudent() == null) {
-                Student studentForGrade = null;
-                studentForGrade = dbSingleton.getDs().createQuery(Student.class).filter("index =", index).get();
-                grade.setStudent(studentForGrade);
-            }
+            Student studentForGrade = null;
+            studentForGrade = dbSingleton.getDs().createQuery(Student.class).filter("index =", index).get();
+            grade.setStudent(studentForGrade);
             GradeIterator gradeIterator = dbSingleton.getDs().createQuery(GradeIterator.class).get();
             grade.setId(gradeIterator.getValue());
-            grade.setCourseId(choosenCourse.getId().toString());
+            grade.setCourseId(choosenCourse.getCourseId().toString());
             Query<GradeIterator> qPom = dbSingleton.getDs().createQuery(GradeIterator.class);
             UpdateOperations<GradeIterator> pomOps;
             pomOps = dbSingleton.getDs().createUpdateOperations(GradeIterator.class).set("value", gradeIterator.getValue() + 1);

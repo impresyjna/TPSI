@@ -61,7 +61,6 @@ var dataFromServer = function (url, idAttr) {
             success: function(data) {
                 var response = ko.mapping.fromJS(data);
 
-                object[idAttr] = response[idAttr]();
                 object.links = [];
 
                 if($.isArray(data.link)) {
