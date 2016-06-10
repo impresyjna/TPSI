@@ -1,10 +1,7 @@
 package other;
 
 import com.mongodb.MongoClient;
-import model.Course;
-import model.Grade;
-import model.GradeIterator;
-import model.Student;
+import model.*;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import resources.DateParamConverterProvider;
@@ -71,7 +68,8 @@ public class Model {
         Grade grade6 = new Grade(2.0, student4, 5);
         course1.getGrades().add(grade6);
 
-        dbSingleton.getDs().save(new GradeIterator(0));
+        //dbSingleton.getDs().save(new StudentIterator(1));
+//        dbSingleton.getDs().save(new GradeIterator(0));
 //        dbSingleton.getDs().save(courses);
 //        dbSingleton.getDs().save(students);
 

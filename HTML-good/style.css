@@ -182,12 +182,13 @@ input, select{
     display: block;
 }
 
-td > input {
+td > input, select {
     background-color: inherit;
     border: none;
+    color: black;
 }
 
-table tr:hover > td > input:not([readonly]):not {
+table tr:hover > td > input:not([readonly]):not, select:not([readonly]):not {
     border: black;
     background-color: #C5CAE9;
 }

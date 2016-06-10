@@ -97,7 +97,7 @@ var dataFromServer = function (url, idAttr) {
         $(form).serializeArray().map(function(x) {
             data[x.name] = x.value;
         });
-        //self.push(ko.mapping.fromJS(data));
+        //self.push(ko.mapping.fromJS(data, { ignore: ["student.index", "courseId"] }));
         $(form).each(function() {
             this.reset();
         });

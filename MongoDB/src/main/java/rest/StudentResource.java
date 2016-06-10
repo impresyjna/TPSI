@@ -1,9 +1,7 @@
 package rest;
 
 import com.mongodb.WriteResult;
-import model.Course;
-import model.Grade;
-import model.Student;
+import model.*;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import other.DbSingleton;
@@ -80,8 +78,13 @@ public class StudentResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response createStudent(@Valid Student student, @Context UriInfo uriInfo) {
+        StudentIterator studentIterator = dbSingleton.getDs().createQuery(StudentIterator.class).get();
+        student.setIndex(studentIterator.getValue()+1);
         dbSingleton.getDs().save(student);
-
+        Query<StudentIterator> qPom = dbSingleton.getDs().createQuery(StudentIterator.class);
+        UpdateOperations<StudentIterator> pomOps;
+        pomOps = dbSingleton.getDs().createUpdateOperations(StudentIterator.class).set("value", studentIterator.getValue() + 1);
+        dbSingleton.getDs().update(qPom, pomOps);
         URI uri = uriInfo.getAbsolutePathBuilder().path(Long.toString(student.getIndex())).build();
         return Response.created(uri).entity(student).build();
     }
