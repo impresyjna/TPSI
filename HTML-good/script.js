@@ -5,7 +5,6 @@ var hostAddress = "http://localhost:8000/";
 var dataFromServer = function (url, idAttr) {
     var self = ko.observableArray();
     self.url = url;
-    var isItGrade = false;
 
     self.get = function () {
         if (self.sub != undefined) {
@@ -39,7 +38,7 @@ var dataFromServer = function (url, idAttr) {
 
                 self.sub = self.subscribe(function(changes) {
                     changes.forEach(function(change) {
-                        if(change.status == 'added' && isItGrade==false) {
+                        if(change.status == 'added') {
                             self.createRequest(change.value,self.url);
                         }
                         if(change.status == 'deleted') {
@@ -77,6 +76,7 @@ var dataFromServer = function (url, idAttr) {
                 }).subscribe(function() {
                     self.updateRequest(object);
                 });
+                alert("Dodano");
             }
         });
     }
@@ -89,21 +89,6 @@ var dataFromServer = function (url, idAttr) {
             data: ko.mapping.toJSON(object, { ignore: ["links"] }),
             method: "PUT"
         });
-    }
-
-    self.newGrade = function (form) {
-        isItGrade = true;
-        var data = {};
-        $(form).serializeArray().map(function(x) {
-            data[x.name] = x.value;
-        });
-        //self.push(ko.mapping.fromJS(data, { ignore: ["student.index", "courseId"] }));
-        $(form).each(function() {
-            this.reset();
-        });
-        self.createRequest(ko.mapping.fromJS(data, { ignore: ["student.index", "courseId"] }), hostAddress + "students/" + data['student.index'] + "/courses/" + data['courseId'] + "/grades");
-        isItGrade = false;
-
     }
 
     self.new = function(form) {
@@ -136,7 +121,7 @@ function viewModel() {
     var self = this;
 
     self.students = new dataFromServer(hostAddress + "students", "index");
-    self.students.getGrades = function () {
+    self.students.getGrades = function() {
         window.location = "#grades";
         self.grades.selectedStudent(this.index());
         self.grades.selectedCourse(null);
@@ -146,7 +131,7 @@ function viewModel() {
     self.students.get();
 
     self.courses = new dataFromServer(hostAddress + "courses", "courseId");
-    self.courses.getGrades = function () {
+    self.courses.getGrades = function() {
         window.location = "#grades";
         self.grades.selectedStudent(null);
         self.grades.selectedCourse(this.courseId());
@@ -158,8 +143,23 @@ function viewModel() {
     self.grades = new dataFromServer(hostAddress + "grades", "gradeId");
     self.grades.selectedCourse = ko.observable();
     self.grades.selectedStudent = ko.observable();
+
+    self.grades.add = function(form) {
+        self.grades.postUrl = hostAddress + 'students/' + self.grades.selectedStudent() + '/courses/' + self.grades.selectedCourse() + '/grades';
+        var data = {};
+        $(form).serializeArray().map(function(x) {
+            data[x.name] = x.value;
+        });
+        data.gradeId = null;
+        self.grades.createRequest(ko.mapping.fromJS(data, { ignore: ["student.index", "courseId"] }), hostAddress + "students/" + data['student.index'] + "/courses/" + data['courseId'] + "/grades");
+        $(form).each(function() {
+            this.reset();
+        });
+    }
 }
 
 var model = new viewModel();
 
-ko.applyBindings(model);
+$(document).ready(function() {
+    ko.applyBindings(model);
+});

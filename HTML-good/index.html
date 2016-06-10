@@ -140,23 +140,23 @@
 <!-- Edit form for grade -->
 <article id="edit_form_grade">
     <h3>Add/Edit Grade</h3>
-    <form data-bind="submit: grades.newGrade">
+    <form data-bind="submit: grades.add">
         Grade:
         <input name="gradeValue" placeholder="Grade value" type="number" required step="0.5" min="2.0" max="5.0"/>
         <br>
         Student index:
         <select name="student.index" required data-bind="options: model.students,
-                                                      optionsText: function(i) { return i.name() + ' ' + i.surname(); },
-                                                      optionsValue: function(i) { return i.index(); },
-                                                      optionsCaption: 'Choose student...',
-                                                      enable: !model.grades.selectedStudent()"></select>
+                                                      optionsText: 'index',
+                                                      optionsValue: 'index',
+                                                      value: model.grades.selectedStudent,
+                                                      optionsCaption: 'Choose student...'"></select>
         <br>
         Course:
         <select name="courseId" required data-bind="options: model.courses,
-                                                      optionsText: function(i) { return i.name(); },
-                                                      optionsValue: function(i) { return i.courseId(); },
+                                                      optionsText: 'name',
+                                                      optionsValue: 'courseId',
                                                       optionsCaption: 'Choose subject...',
-                                                      enable: !model.grades.selectedCourse()"></select>
+                                                      value: model.grades.selectedCourse"></select>
         <input name="date" type="date" min="1950-01-01" max="2016-05-20" required/>
         <input type="submit" value="Submit">
     </form>

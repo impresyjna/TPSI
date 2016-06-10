@@ -123,15 +123,12 @@ public class GradeResource {
         if (grade.validateNote()) {
             Course choosenCourse = null;
             choosenCourse = dbSingleton.getDs().get(Course.class, courseId);
-            Student choosenStudent = null;
-            Query qPom = dbSingleton.getDs().createQuery(Student.class).filter("index =", index);
-            choosenStudent = (Student) qPom.get();
+//            Student choosenStudent = null;
+//            Query qPom = dbSingleton.getDs().createQuery(Student.class).filter("index =", index);
+//            choosenStudent = (Student) qPom.get();
             for (int i = 0; i < choosenCourse.getGrades().size(); i++) {
                 Grade tempGrade = choosenCourse.getGrades().get(i);
                 if (tempGrade.getGradeId() == gradeId) {
-                    if (grade.getStudent() == null) {
-                        grade.setStudent(choosenStudent);
-                    }
                     grade.setGradeId(tempGrade.getGradeId());
                     choosenCourse.getGrades().set(i, grade);
                 }

@@ -30,7 +30,7 @@ public class Grade {
                     bindings = {
                             @Binding(name = "index", value = "${instance.student.index}"),
                             @Binding(name = "courseId", value = "${instance.courseId}"),
-                            @Binding(name = "gradeId", value = "${instance.courseId}")
+                            @Binding(name = "gradeId", value = "${instance.gradeId}")
                     }, rel = "self"),
             @InjectLink(resource = CourseResource.class, method = "getCourse", style = InjectLink.Style.ABSOLUTE,
                     bindings = @Binding(name = "courseId", value = "${instance.courseId}"), rel = "course"),
