@@ -19,7 +19,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.LinkedList;
 
 /**
  * Created by impresyjna on 19.04.2016.
@@ -97,5 +100,10 @@ public class Course {
 
     public List<Grade> getStudentGradesList(long index) {
         return grades.stream().filter(grade -> grade.getStudent().getIndex() == index).collect(Collectors.toList());
+    }
+
+    public Map<Integer, Grade> getStudentGradesMape(long index) {
+        return grades.stream().filter(grade -> grade.getStudent().getIndex() == index).
+                collect(Collectors.toMap(Grade::getGradeId, Function.identity()));
     }
 }

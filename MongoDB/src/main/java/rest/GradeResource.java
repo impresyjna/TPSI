@@ -5,6 +5,7 @@ import model.Grade;
 import model.GradeIterator;
 import model.Student;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import other.DbSingleton;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -120,26 +122,29 @@ public class GradeResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response updateGrade(@PathParam("index") final long index, @PathParam("courseId") final ObjectId courseId, @Valid Grade grade, @PathParam("gradeId") final int gradeId) {
-        if (grade.validateNote()) {
-            Course choosenCourse = null;
-            choosenCourse = dbSingleton.getDs().get(Course.class, courseId);
-//            Student choosenStudent = null;
-//            Query qPom = dbSingleton.getDs().createQuery(Student.class).filter("index =", index);
-//            choosenStudent = (Student) qPom.get();
-            for (int i = 0; i < choosenCourse.getGrades().size(); i++) {
-                Grade tempGrade = choosenCourse.getGrades().get(i);
-                if (tempGrade.getGradeId() == gradeId) {
-                    grade.setGradeId(tempGrade.getGradeId());
-                    choosenCourse.getGrades().set(i, grade);
-                }
-            }
-            Query<Course> q = dbSingleton.getDs().createQuery(Course.class).filter("_id =", courseId);
-            UpdateOperations<Course> ops;
-            ops = dbSingleton.getDs().createUpdateOperations(Course.class).set("grades", choosenCourse.getGrades());
-            dbSingleton.getDs().update(q, ops);
-            return Response.status(Response.Status.OK).entity(grade).build();
+        if(!grade.validateNote()) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).
+                    entity("Note is not valid").build());
         }
-        return Response.status(Response.Status.NOT_MODIFIED).entity(grade).build();
+        Datastore datastore = dbSingleton.getDs();
+        Course course = datastore.find(Course.class).field("_id").equal(courseId).get();
+        Student student = datastore.find(Student.class).field("index").equal(index).get();
+        if(course == null || student == null) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Not found").build());
+        }
+
+        Grade gradeToUpdate = course.getStudentGradesMape(index).get(gradeId);
+        if(gradeToUpdate == null) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Not found").build());
+        } else {
+            grade.setGradeId(gradeId);
+            grade.setStudent(gradeToUpdate.getStudent());
+            grade.setCourseId(courseId.toString());
+        }
+        Collections.replaceAll(course.getGrades(), gradeToUpdate, grade);
+        datastore.save(course);
+
+        return Response.ok(grade).build();
     }
 
     @Path("/{gradeId}")
