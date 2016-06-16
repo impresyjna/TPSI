@@ -136,7 +136,9 @@ function viewModel() {
         window.location = "#grades";
         self.grades.selectedStudent(this.index());
         self.grades.selectedCourse(null);
-        self.grades.url = this.links["grades"];
+        self.grades.isCourseEnable(true);
+        self.grades.isStudentEnable(false);
+        self.grades.url = hostAddress + "students/" + this.index() + "/grades";
         self.grades.get();
     }
 
@@ -159,7 +161,9 @@ function viewModel() {
         window.location = "#grades";
         self.grades.selectedStudent(null);
         self.grades.selectedCourse(this.courseId());
-        self.grades.url = this.links["grades"];
+        self.grades.isCourseEnable(false);
+        self.grades.isStudentEnable(true);
+        self.grades.url = hostAddress + "courses/" + this.courseId() + "/grades";
         self.grades.get();
     }
 

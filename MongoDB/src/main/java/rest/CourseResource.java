@@ -111,11 +111,11 @@ public class CourseResource {
     @Path("/{courseId}/grades")
     @GET
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Grade> getGrades(@PathParam("id") final long id,
+    public List<Grade> getGrades(@PathParam("courseId") final ObjectId courseId,
                                  @DefaultValue("0") @QueryParam("direction") int direction,
                                  @QueryParam("gradeValueQuery") Double gradeValue, @QueryParam("dateQuery") Date date) {
         Datastore datastore = dbSingleton.getDs();
-        Course course = datastore.find(Course.class).field("courseId").equal(id).get();
+        Course course = datastore.find(Course.class).field("_id").equal(courseId).get();
         if(course == null) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Not found").build());
         }
