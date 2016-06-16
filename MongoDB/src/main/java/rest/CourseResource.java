@@ -4,9 +4,11 @@ import com.mongodb.WriteResult;
 import model.Course;
 import model.Grade;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import other.DbSingleton;
+import other.GradeListUtil;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -16,6 +18,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,14 +31,25 @@ public class CourseResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Course> getAllCourses(@QueryParam("teacher") String teacher) {
-        System.out.println("Courses index");
-        Query<Course> q = dbSingleton.getDs().createQuery(Course.class);
-        List<Course> courses = q.asList();
-        if (teacher != null) {
-            courses = courses.stream().filter(course -> course.getTeacher().equals(teacher)).
-                    collect(Collectors.toList());
+    public List<Course> getAllCourses(@QueryParam("teacher") String teacher, @QueryParam("nameQuery") String nameQuery,
+                                   @QueryParam("teacherQuery") String teacherQuery) {
+        Datastore datastore = dbSingleton.getDs();
+
+        List<Course> courses = datastore.find(Course.class).asList();
+        if(teacher != null && teacher.length() > 0) {
+            courses = courses.stream().filter(course -> course.getTeacher().equals(teacher)).collect(Collectors.toList());
         }
+
+        if(nameQuery != null && nameQuery.length() > 0) {
+            courses = courses.stream().filter(course -> course.getName().toLowerCase()
+                    .contains(nameQuery.toLowerCase())).collect(Collectors.toList());
+        }
+
+        if(teacherQuery != null && teacherQuery.length() > 0) {
+            courses = courses.stream().filter(course -> course.getTeacher().toLowerCase()
+                    .contains(teacherQuery.toLowerCase())).collect(Collectors.toList());
+        }
+
         return courses;
     }
 
@@ -97,27 +111,22 @@ public class CourseResource {
     @Path("/{courseId}/grades")
     @GET
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Grade> getGrades(@PathParam("courseId") final ObjectId courseId,
-                                 @DefaultValue("1") @QueryParam("direction") int direction, @QueryParam("note") Double note) {
-        Course course = dbSingleton.getDs().get(Course.class, courseId);
-        if (course == null) {
+    public List<Grade> getGrades(@PathParam("id") final long id,
+                                 @DefaultValue("0") @QueryParam("direction") int direction,
+                                 @QueryParam("gradeValueQuery") Double gradeValue, @QueryParam("dateQuery") Date date) {
+        Datastore datastore = dbSingleton.getDs();
+        Course course = datastore.find(Course.class).field("courseId").equal(id).get();
+        if(course == null) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Not found").build());
         }
 
         List<Grade> grades = course.getGrades();
-        if (note != null) {
-            if (Grade.validateNoteWithValue(note)) {
-                switch (direction) {
-                    case -1:
-                        grades = grades.stream().filter(grade -> grade.getGradeValue() <= note).collect(Collectors.toList());
-                        break;
-                    case 1:
-                        grades = grades.stream().filter(grade -> grade.getGradeValue() >= note).collect(Collectors.toList());
-                        break;
-                    default:
-                        break;
-                }
-            }
+        if(gradeValue != null) {
+            grades = GradeListUtil.getGradesByGradeValue(grades, gradeValue, direction);
+        }
+
+        if(date != null) {
+            grades = GradeListUtil.getGradesByDate(grades, date);
         }
 
         return grades;

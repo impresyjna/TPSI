@@ -56,18 +56,10 @@
         </tbody>
     </table>
     <h4>Filters:</h4>
-    <form>
-        <input type="text" name="name" placeholder="Name">
-        <input type="text" name="surname" placeholder="Surname">
-        Birth date: <input type="date" name="date">
-        Direction:
-        <select name="direction">
-            <option value="before">Before</option>
-            <option value="equals">Equals</option>
-            <option value="after">After</option>
-        </select>
-        <input type="submit" value="Submit">
-    </form>
+        <input placeholder="index" data-bind="textInput: model.students.queryParams.indexQuery" type="number" step="1" min="1" max="999999" />
+        <input type="text" name="name" data-bind="textInput: model.students.queryParams.nameQuery" placeholder="Name"/>
+        <input type="text" name="surname" data-bind="textInput: model.students.queryParams.surnameQuery" placeholder="Surname"/>
+        Birth date: <input type="date" data-bind="textInput: model.students.queryParams.dateOfBirthQuery" min="1950-01-01" max="2016-06-20" />
 </article>
 
 <!-- Edit form for student -->
@@ -117,23 +109,9 @@
         </tbody>
     </table>
     <h4>Filters:</h4>
-    <form>
-        Grade:
-        <select name="grade_value">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="3.5">3.5</option>
-            <option value="4">4</option>
-            <option value="4.5">4.5</option>
-            <option value="5">5</option>
-        </select>
-        Direction:
-        <select name="direction">
-            <option value="more">More</option>
-            <option value="less">Less</option>
-        </select>
-        <input type="submit" value="Submit">
-    </form>
+    <input placeholder="Grade value" data-bind="textInput: model.grades.queryParams.gradeValueQuery" type="number" step="0.5" min="2.0" max="5.0"/>
+    <input type="date" data-bind="textInput: model.grades.queryParams.dateQuery" min="1950-01-01" max="2016-05-20" />
+
 
 </article>
 
@@ -189,10 +167,9 @@
         </tbody>
     </table>
     <h4>Filters:</h4>
-    <form>
-        <input type="text" name="teacher" placeholder="Teacher">
-        <input type="submit" value="Submit">
-    </form>
+    <input placeholder="Name" data-bind="textInput: model.courses.queryParams.nameQuery" type="text" />
+    <input placeholder="Teacher" data-bind="textInput: model.courses.queryParams.teacherQuery" type="text" />
+
 </article>
 
 <article id="edit_form_course">

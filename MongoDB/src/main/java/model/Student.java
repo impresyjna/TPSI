@@ -28,10 +28,8 @@ import java.util.List;
 @Entity
 public class Student {
     @InjectLinks({
-        @InjectLink(resource = StudentResource.class, method = "getOneStudent", style = InjectLink.Style.ABSOLUTE,
-                bindings = @Binding(name = "index", value = "${instance.index}"), rel = "self"),
-        @InjectLink(resource = StudentResource.class, method = "getGrades", style = InjectLink.Style.ABSOLUTE,
-                bindings = @Binding(name = "index", value = "${instance.index}"), rel = "grades")
+            @InjectLink(resource = StudentResource.class, method = "getOneStudent", style = InjectLink.Style.ABSOLUTE,
+                    bindings = @Binding(name = "index", value = "${instance.index}"), rel = "self")
     })
     @XmlElement(name="link")
     @XmlElementWrapper(name = "links")

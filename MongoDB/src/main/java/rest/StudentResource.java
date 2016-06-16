@@ -1,11 +1,14 @@
 package rest;
 
-import com.mongodb.WriteResult;
-import model.*;
+import model.Course;
+import model.Grade;
+import model.Student;
+import model.StudentIterator;
+import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import other.DbSingleton;
-import other.Model;
+import other.GradeListUtil;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -14,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,36 +27,56 @@ public class StudentResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Student> getAllStudents(@QueryParam("name") String name,
-                                        @QueryParam("surname") String surname,
-                                        @DefaultValue("equals") @QueryParam("direction") String direction,
-                                        @QueryParam("date") Date date) {
-        System.out.println("Students index");
-        Query<Student> q = dbSingleton.getDs().createQuery(Student.class);
-        List<Student> students = q.asList();
-        if (name != null) {
-            students = students.stream().filter(student -> student.getName().equals(name)).
-                    collect(Collectors.toList());
-        }
-        if (surname != null) {
-            students = students.stream().filter(student -> student.getSurname().equals(surname)).
-                    collect(Collectors.toList());
-        }
-        if (date != null) {
-            if (direction.equals("before")) {
-                students = students.stream().filter(student -> student.getDateOfBirth().before(date))
-                        .collect(Collectors.toList());
-            }
-            if (direction.equals("equals")) {
-                students = students.stream().filter(student -> student.getDateOfBirth().equals(date))
-                        .collect(Collectors.toList());
-            }
-            if (direction.equals("after")) {
-                students = students.stream().filter(student -> student.getDateOfBirth().after(date))
-                        .collect(Collectors.toList());
-            }
+    public List<Student> getAllStudents(@QueryParam("firstName") String firstName,
+                                     @QueryParam("lastName") String lastName,
+                                     @DefaultValue("0") @QueryParam("direction") int direction,
+                                     @QueryParam("indexQuery") Long index,
+                                     @QueryParam("dateOfBirthQuery") Date date, @QueryParam("nameQuery") String nameQuery,
+                                     @QueryParam("surnameQuery") String surnameQuery) {
+        Datastore datastore = dbSingleton.getDs();
 
+        List<Student> students = datastore.find(Student.class).asList();
+        if(index != null) {
+            students = students.stream().filter(student -> student.getIndex() == index).collect(Collectors.toList());
         }
+        if(firstName != null) {
+            students = students.stream().filter(student -> student.getName().equals(firstName)).
+                    collect(Collectors.toList());
+        }
+        if(lastName != null) {
+            students = students.stream().filter(student -> student.getSurname().equals(lastName)).
+                    collect(Collectors.toList());
+        }
+
+        if(date != null) {
+            switch(direction) {
+                case -1:
+                    students = students.stream().filter(student -> student.getDateOfBirth().before(date))
+                            .collect(Collectors.toList());
+                    break;
+                case 0:
+                    students = students.stream().filter(student -> student.getDateOfBirth().equals(date))
+                            .collect(Collectors.toList());
+                    break;
+                case 1:
+                    students = students.stream().filter(student -> student.getDateOfBirth().after(date))
+                            .collect(Collectors.toList());
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if(nameQuery != null && nameQuery.length() > 0) {
+            students = students.stream().filter(student -> student.getName().toLowerCase()
+                    .contains(nameQuery.toLowerCase())).collect(Collectors.toList());
+        }
+
+        if(surnameQuery != null && surnameQuery.length() > 0) {
+            students = students.stream().filter(student -> student.getSurname().toLowerCase()
+                    .contains(surnameQuery.toLowerCase())).collect(Collectors.toList());
+        }
+
         return students;
     }
 
@@ -132,11 +154,21 @@ public class StudentResource {
     @Path("/{index}/grades")
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Grade> getGrades(@PathParam("index") final long index) {
-        List<Course> courses = dbSingleton.getDs().find(Course.class).asList();
+    public List<Grade> getGrades(@PathParam("index") final long index,
+                                 @QueryParam("gradeValueQuery") Double gradeValue, @QueryParam("dateQuery") Date date) {
+        Datastore datastore = dbSingleton.getDs();
+        List<Course> courses = datastore.find(Course.class).asList();
 
-        List<Grade> grades = new ArrayList<>();
-        courses.stream().forEach(course -> grades.addAll(course.getStudentGradesList(index)));
+        List<Grade> grades = courses.stream().
+                flatMap(course -> course.getStudentGradesList(index).stream()).collect(Collectors.toList());
+
+        if(gradeValue != null) {
+            grades = GradeListUtil.getGradesByGradeValue(grades, gradeValue, 0);
+        }
+
+        if(date != null) {
+            grades = GradeListUtil.getGradesByDate(grades, date);
+        }
 
         return grades;
     }

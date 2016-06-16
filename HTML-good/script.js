@@ -5,17 +5,24 @@ var hostAddress = "http://localhost:8000/";
 var dataFromServer = function (url, idAttr) {
     var self = ko.observableArray();
     self.url = url;
+    self.postUrl = self.url;
 
-    self.get = function () {
-        if (self.sub != undefined) {
-            self.sub.dispose();
+    self.get = function (query) {
+        var url = self.url;
+
+        if(query) {
+            url = url + query;
         }
-        self.removeAll();
+
         $.ajax({
             method: "GET",
-            url: self.url,
+            url: url,
             dataType: "json",
             success: function (data) {
+                if (self.sub != undefined) {
+                    self.sub.dispose();
+                }
+                self.removeAll();
                 data.forEach(function (element, index, array) {
                     var object = ko.mapping.fromJS(element, {ignore: ["link"]});
                     object.links = [];
@@ -114,6 +121,10 @@ var dataFromServer = function (url, idAttr) {
         self.remove(this);
     }
 
+    self.parseQuery = function() {
+        self.get('?' + $.param(ko.mapping.toJS(self.queryParams)));
+    }
+
     return self;
 }
 
@@ -128,6 +139,19 @@ function viewModel() {
         self.grades.url = this.links["grades"];
         self.grades.get();
     }
+
+    self.students.queryParams = {
+        indexQuery: ko.observable(),
+        nameQuery: ko.observable(),
+        surnameQuery: ko.observable(),
+        dateOfBirthQuery: ko.observable()
+    }
+    Object.keys(self.students.queryParams).forEach(function(key) {
+        self.students.queryParams[key].subscribe(function() {
+            self.students.parseQuery();
+        });
+    });
+
     self.students.get();
 
     self.courses = new dataFromServer(hostAddress + "courses", "courseId");
@@ -138,11 +162,24 @@ function viewModel() {
         self.grades.url = this.links["grades"];
         self.grades.get();
     }
+
+    self.courses.queryParams = {
+        nameQuery: ko.observable(),
+        teacherQuery: ko.observable()
+    }
+    Object.keys(self.courses.queryParams).forEach(function(key) {
+        self.courses.queryParams[key].subscribe(function() {
+            self.courses.parseQuery();
+        });
+    });
+
     self.courses.get();
 
     self.grades = new dataFromServer(hostAddress + "grades", "gradeId");
     self.grades.selectedCourse = ko.observable();
     self.grades.selectedStudent = ko.observable();
+    self.grades.isCourseEnable = ko.observable(true);
+    self.grades.isStudentEnable = ko.observable(true);
 
     self.grades.add = function(form) {
         self.grades.postUrl = hostAddress + 'students/' + self.grades.selectedStudent() + '/courses/' + self.grades.selectedCourse() + '/grades';
@@ -156,6 +193,16 @@ function viewModel() {
             this.reset();
         });
     }
+
+    self.grades.queryParams = {
+        gradeValueQuery: ko.observable(),
+        dateQuery: ko.observable()
+    }
+    Object.keys(self.grades.queryParams).forEach(function(key) {
+        self.grades.queryParams[key].subscribe(function() {
+            self.grades.parseQuery();
+        });
+    });
 }
 
 var model = new viewModel();

@@ -32,13 +32,7 @@ import java.util.LinkedList;
 public class Course {
     @InjectLinks({
             @InjectLink(resource = CourseResource.class, method = "getOneCourse", style = InjectLink.Style.ABSOLUTE,
-                    bindings = @Binding(name = "courseId", value = "${instance.courseId}"), rel = "self"),
-            @InjectLink(resource = CourseResource.class, method = "getGrades", style = InjectLink.Style.ABSOLUTE,
-                    bindings = {
-                            @Binding(name = "courseId", value = "${instance.courseId}"),
-                            @Binding(name = "direction", value = ""),
-                            @Binding(name = "note", value = "")
-                    }, rel = "grades")
+                    bindings = @Binding(name = "courseId", value = "${instance.courseId}"), rel = "self")
     })
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
